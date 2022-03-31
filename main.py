@@ -1,12 +1,11 @@
-import pandas as pd
 import dask.dataframe as dd
+import time
 
+start_time = time.time()
 files = []
-for i in range(1):
-    files.append(f"{i}_parquet_file.gzip")
-# one file is broken
-# files.remove("1_parquet_file.gzip")
-df = dd.read_parquet(files)
+for i in range(440):
+    files.append(f"new_{i}.parquet")
+df = dd.read_parquet(files, engine='pyarrow')
 
 goal_table = df[['repo_name', 'author']].compute()
 repo_names = goal_table['repo_name']
@@ -30,5 +29,4 @@ for commit_index, row in goal_table.iterrows():
 for key, value in distinct_repo.items():
     distinct_repo[key]['distinct_authors'] = len(distinct_repo[key]['distinct_authors'])
 
-print(distinct_repo)
-
+print(time.time() - start_time)
